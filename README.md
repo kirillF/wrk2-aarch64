@@ -1,3 +1,8 @@
+# AmpereTravis fork of Kinvolk fork of wrk2
+This fork modifies wrk.c to make this project buildable on aarch64 bare-metal. 
+
+Note that this project dramatically changes the underlying LuaJIT dependency tree. For the most up to date version of wrk2 please use the mainline GitHub. I would consider this version "hacked" together for instances where you _must_ run wrk2 on an aarch64 system. 
+
 # wrk2
 [![Build Status](https://travis-ci.com/giltene/wrk2.svg?branch=master)](https://travis-ci.com/giltene/wrk2) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/giltene/wrk2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
