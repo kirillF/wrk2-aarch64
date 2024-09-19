@@ -1,5 +1,5 @@
-CFLAGS  := -std=c99 -Wall -O2 -D_REENTRANT
-LIBS    := -lpthread -lm -lcrypto -lssl
+CFLAGS  := -std=c99 -Wall -O2 -D_REENTRANT 
+LIBS    := -lpthread -lm -lcrypto -lssl 
 
 TARGET  := $(shell uname -s | tr '[A-Z]' '[a-z]' 2>/dev/null || echo unknown)
 
@@ -10,9 +10,11 @@ else ifeq ($(TARGET), darwin)
 	# Per https://luajit.org/install.html: If MACOSX_DEPLOYMENT_TARGET
 	# is not set then it's forced to 10.4, which breaks compile on Mojave.
 	export MACOSX_DEPLOYMENT_TARGET = $(shell sw_vers -productVersion)
+	ifneq ($(shell uname -m),arm64)
 	LDFLAGS += -pagezero_size 10000 -image_base 100000000
-	LIBS += -L/usr/local/opt/openssl/lib
-	CFLAGS += -I/usr/local/include -I/usr/local/opt/openssl/include
+	endif
+	LIBS += -L/opt/homebrew/Cellar/openssl@3/3.3.2/lib
+	CFLAGS += -I/usr/local/include -I/opt/homebrew/Cellar/openssl@3/3.3.2/include
 else ifeq ($(TARGET), linux)
         CFLAGS  += -D_POSIX_C_SOURCE=200809L -D_BSD_SOURCE
 	LIBS    += -ldl
@@ -51,7 +53,8 @@ $(ODIR):
 
 $(ODIR)/bytecode.o: src/wrk.lua
 	@echo LUAJIT $<
-	@$(SHELL) -c 'cd $(LDIR) && ./luajit -b $(CURDIR)/$< $(CURDIR)/$@'
+	@$(SHELL) -c 'cd $(LDIR) && ./luajit -b $(CURDIR)/$< $(CURDIR)/$(patsubst %.o,%.c,$@)' 
+	@$(CC) -xc -c -o $@ $(patsubst %.o,%.c,$@)
 
 $(ODIR)/%.o : %.c
 	@echo CC $<
